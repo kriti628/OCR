@@ -1,3 +1,10 @@
+function g = sigmoid(z)
+g = 1.0 ./ (1.0 + exp(-z));
+end
+
+
+
+
 function [J, grad] = lrCostFunction(theta, X, y, lambda)
 
 J = 0;
@@ -35,3 +42,20 @@ for c = 1:num_labels
     all_theta(c,:) = b';
 end
 end
+
+function p = predictOneVsAll(all_theta, X)
+
+m = size(X, 1);
+num_labels = size(all_theta, 1);
+p = zeros(size(X, 1), 1);
+
+% Add ones to the X data matrix
+X = [ones(m, 1) X];
+      
+prob = all_theta*X';
+prob = arrayfun(@(z) sigmoid(z), prob);
+[M, I] = max(prob); 
+p = I';
+
+end
+
