@@ -1,0 +1,37 @@
+function [J, grad] = lrCostFunction(theta, X, y, lambda)
+
+J = 0;
+grad = zeros(size(theta));
+
+
+h = zeros(m);
+h = arrayfun(@(x) sigmoid(x), X*theta);
+J = -y'*log(h) - (1-y)'*log(1-h) + lambda*(sum(sum(theta.*theta))-theta(1)*theta(1))/2;
+J = J/m;
+grad = (1/m)*X'*(h-y) ;
+a = grad(1);
+grad = grad + (lambda/m)*theta;
+grad(1) = a;
+grad = grad(:);
+
+end
+
+function [all_theta] = oneVsAll(X, y, num_labels, lambda)
+
+m = size(X, 1);
+n = size(X, 2);
+
+
+all_theta = zeros(num_labels, n + 1);
+
+% Add ones to the X data matrix
+X = [ones(m, 1) X];
+
+
+for c = 1:num_labels
+    initial = zeros(n+1, 1);
+    options = optimset('GradObj', 'on', 'MaxIter', 50);
+    [b ] = fmincg(@(t) (lrCostFunction(t, X, (y == c),lambda)), initial, options);
+    all_theta(c,:) = b';
+end
+end
